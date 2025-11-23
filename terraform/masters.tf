@@ -64,7 +64,7 @@ resource "proxmox_vm_qemu" "masters" {
   connection {
     type        = "ssh"
     user        = local.cloud_init.user
-    private_key = file("~/.ssh/id_rsa.pub")
+    private_key = file("id_rsa.pub")
     host = cidrhost(
       local.cidr,
       local.masters.network_last_octect + count.index
@@ -80,7 +80,7 @@ resource "proxmox_vm_qemu" "masters" {
     connection {
         type        = "ssh"
         user        = local.cloud_init.user
-        private_key = file("~/.ssh/id_rsa")
+        private_key = file("id_rsa")
         host = cidrhost(
             local.cidr,
             local.masters.network_last_octect + count.index
