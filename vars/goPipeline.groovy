@@ -4,11 +4,13 @@ def call (body) {
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = settings
   body()
+
+  def podYaml = libraryResource('jenkinsPod.yaml')
  
   pipeline {
     agent {
       kubernetes {
-        yamlFile libraryResource('jenkinsPod.yaml')
+        yamlFile podYaml
       }
     }
     stages {
