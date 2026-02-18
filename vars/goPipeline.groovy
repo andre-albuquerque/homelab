@@ -6,6 +6,8 @@ def call (body) {
   body()
 
   def podYaml = libraryResource('jenkinsPod.yaml')
+
+  echo "Resource contents:\n${libraryResource('jenkinsPod.yaml')}"
  
   pipeline {
     agent {
