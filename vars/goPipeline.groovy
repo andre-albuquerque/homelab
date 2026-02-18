@@ -18,6 +18,7 @@ def call (body) {
             sh '''
               echo $USER
             '''
+          }
         }
       }
     }
