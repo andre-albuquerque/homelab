@@ -31,3 +31,4 @@ This repository serves as a practice lab for DevOps, demonstrating CI pipeline w
 ├── .gitignore
 └── README.md
 ```
+
