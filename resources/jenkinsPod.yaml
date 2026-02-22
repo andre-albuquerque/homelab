@@ -9,3 +9,5 @@ spec:
     image: golang:1.25-bookworm
     command:
     - sleep
+    args:
+    - infinity
