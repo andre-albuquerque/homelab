@@ -12,7 +12,7 @@ def call (body) {
   pipeline {
     agent {
       kubernetes {
-        yamlFile podYaml
+        yaml podYaml
       }
     }
     stages {
