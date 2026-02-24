@@ -32,13 +32,12 @@ func TestConnectingDatabase(t *testing.T) {
 	sqlDB.Close()
 
 	// Test DB exceptions
-	os.Chmod(dbPath, 0000)
+	dbPath := "/tmp/non_existent.db"
 	db = Init()
-	sqlDB, err = db.DB()
+	sqlDB, err := db.DB()
 	asserts.NoError(err, "Should get sql.DB")
 	asserts.Error(sqlDB.Ping(), "Db should not be able to ping")
 	sqlDB.Close()
-	os.Chmod(dbPath, 0644)
 }
 
 func TestConnectingTestDatabase(t *testing.T) {
