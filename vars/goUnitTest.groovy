@@ -12,10 +12,9 @@ def call (body) {
         echo ">>> TESTING $pkg"
         if ! go test -v -buildvcs=false -p=1 $pkg; then
           echo "‼️ FIRST FAIL IN PACKAGE $pkg ‼️"
-          break
+          exit 1   # <-- fail the pipeline
         fi
       done
     '''
-  }
- 
+  } 
 }
