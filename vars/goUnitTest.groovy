@@ -8,7 +8,7 @@ def call (body) {
   container('go') {
     sh '''
       cd api
-      go test -v ./...
+      go test -v -buildvcs=false ./...
     '''
   }
  
