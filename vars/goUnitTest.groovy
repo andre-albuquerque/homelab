@@ -8,11 +8,11 @@ def call (body) {
   container('go') {
     sh '''
       cd api
-      for pkg in $(go list ./...); do
+      for pkg in $(go list -buildvcs=false ./...); do
         echo ">>> TESTING $pkg"
         if ! go test -v -buildvcs=false -p=1 $pkg; then
           echo "‼️ FIRST FAIL IN PACKAGE $pkg ‼️"
-          exit 1   # <-- fail the pipeline
+          exit 1
         fi
       done
     '''
