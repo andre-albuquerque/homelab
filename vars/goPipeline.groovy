@@ -6,8 +6,6 @@ def call (body) {
   body()
 
   def podYaml = libraryResource('jenkinsPod.yaml')
-
-  echo "Resource contents:\n${libraryResource('jenkinsPod.yaml')}"
  
   pipeline {
     agent {
@@ -16,12 +14,15 @@ def call (body) {
       }
     }
     stages {
-      stage('Test') {
+      stage('Unit test') {
         steps {
-          container('go') {
-            sh '''
-              echo $USER
-            '''
+          goUnitTest{}
+        }
+        when{
+          anyOf {
+            branch pattern: 'main'
+            branch pattern: 'master'
+            branch pattern: 'hotfix-*'
           }
         }
       }
