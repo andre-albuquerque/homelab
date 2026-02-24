@@ -7,8 +7,8 @@ def call (body) {
  
   container('go') {
     sh '''
-      go build ./...
-      go test ./... -cover
+      go build ./api/...
+      go test ./api/... -cover
     '''
   }
  
