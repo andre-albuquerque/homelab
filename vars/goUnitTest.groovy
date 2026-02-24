@@ -8,7 +8,13 @@ def call (body) {
   container('go') {
     sh '''
       cd api
-      go test -v -p=1 -buildvcs=false ./...
+      for pkg in $(go list ./...); do
+        echo ">>> TESTING $pkg"
+        if ! go test -v -buildvcs=false -p=1 $pkg; then
+          echo "‼️ FIRST FAIL IN PACKAGE $pkg ‼️"
+          break
+        fi
+      done
     '''
   }
  
