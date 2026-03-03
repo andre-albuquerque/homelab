@@ -11,3 +11,28 @@ spec:
     - sleep
     args:
     - infinity
+  - name: kaniko
+    image: gcr.io/kaniko-project/executor:debug
+    command:
+    - sleep
+    args:
+    - infinity
+    resources:
+        limits:
+          memory: 500Mi
+          ephemeral-storage: "2Gi"
+    volumeMounts:
+      - name: harbor-credentials
+        mountPath: /kaniko/.docker
+      - name: jenkins-artifacts
+        mountPath: /artifacts
+  volumes:
+    - name: harbor-credentials
+      secret:
+        secretName: harbor-credentials
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+    - name: jenkins-artifacts
+      persistentVolumeClaim:
+        claimName: jenkins-artifacts
