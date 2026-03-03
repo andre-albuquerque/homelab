@@ -26,16 +26,16 @@ def call (body) {
           }
         }
       }
-    }
-    stage {
-      stage ('Build and Push') {
-        steps {
-          kanikoBuildPUsh{}
-        }
-        when {
-          anyOf {
-            branch pattern: 'main'
-            branch pattern: 'master'
+      stage {
+        stage ('Build and Push') {
+          steps {
+            kanikoBuildPUsh{}
+          }
+          when {
+            anyOf {
+              branch pattern: 'main'
+              branch pattern: 'master'
+            }
           }
         }
       }
