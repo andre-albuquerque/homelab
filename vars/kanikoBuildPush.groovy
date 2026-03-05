@@ -7,7 +7,7 @@ def call (body) {
  
   container('kaniko') {
     sh '''
-      REGISTRY="harbor-registry.harbor.svc.cluster.local:5000/andrealbuquerqueme"
+      REGISTRY="harbor.andrealbuquerque.me/andrealbuquerqueme"
       REPOSITORY=${JOB_NAME%/*}
       IMAGE_TAG=${GIT_COMMIT:0:10}
       ENVIRONMENT="prod"

@@ -4,6 +4,10 @@ metadata:
   namespace: jenkins
 spec:
   serviceAccountName: jenkins-ci
+  hostAliases:
+  - ip: "192.168.1.150"
+    hostnames:
+    - "harbor.andrealbuquerque.me"
   containers:
   - name: go
     image: golang:1.25-bookworm
