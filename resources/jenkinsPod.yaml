@@ -30,6 +30,15 @@ spec:
         mountPath: /kaniko/.docker
       - name: jenkins-artifacts
         mountPath: /artifacts
+  - name: alpine
+    image: alpine
+    command:
+    - sleep
+    args:
+    - infinity
+    volumeMounts:
+      - name: jenkins-artifacts
+        mountPath: /artifacts
   volumes:
     - name: harbor-credentials
       secret:
