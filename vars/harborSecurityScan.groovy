@@ -4,7 +4,7 @@ def call (body) {
   body.delegate = settings
   body()
   container('alpine') {
-    ssh '''
+    sh '''
       apk add curl jq
 
       # retry backoff parameters
