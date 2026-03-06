@@ -16,7 +16,7 @@ def call (body) {
       TAG="${GIT_COMMIT:0:10}"
        
       # harbor variables
-      HARBOR_URL="http://harbor.localhost.com"
+      HARBOR_URL="http://harbor.andrealbuquerque.me"
       HARBOR_PATH="api/v2.0/projects/andrealbuquerqueme/repositories/${JOB_NAME%/*}/artifacts/${TAG}"
       HARBOR_URL_PARAMS="with_scan_overview=true"
 
