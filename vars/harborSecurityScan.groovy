@@ -32,16 +32,6 @@ def call (body) {
           -H "authorization: Basic ${HARBOR_CREDENTIALS}" \
           | jq -r 'if .scan_overview == null then "null" else (.scan_overview | to_entries[0].value.severity) end'
         )
-
-        DEBUG_CURL=$(curl -s \
-          "${HARBOR_URL}/${HARBOR_PATH}?${HARBOR_URL_PARAMS}" \
-          -H "accept: application/json" \
-          -H "authorization: Basic ${HARBOR_CREDENTIALS}" \
-          | jq .
-        )
-
-        echo "Harbor API response:"
-        echo "$DEBUG_CURL" | jq .
  
         echo "sleep: ${SLEEP}s | count: ${COUNT}"
         sleep $SLEEP
