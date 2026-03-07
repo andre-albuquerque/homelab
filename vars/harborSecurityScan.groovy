@@ -5,6 +5,11 @@ def call (body) {
   body()
   container('alpine') {
     sh '''
+      if [ -z "$HARBOR_CREDENTIALS" ]; then
+        echo "Please, configure Harbor Credentials"
+        exit 1
+      fi
+
       apk add curl jq
 
       # retry backoff parameters
