@@ -1,19 +1,22 @@
 # ---------- Builder ----------
-FROM golang:1.25-bookworm AS builder
+FROM golang:1.25-alpine AS builder
 
 WORKDIR /app
 
 COPY api/go.mod api/go.sum ./
-RUN --mount=type=cache,target=/go/pkg/mod go mod download
+
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
 COPY api/ .
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    --mount=type=cache,target=/go/pkg/mod \
+    CGO_ENABLED=0 \
     go build -ldflags="-s -w" -o app
 
 # ---------- Runtime ----------
-FROM gcr.io/distroless/cc-debian12
+FROM gcr.io/distroless/static-debian12
 
 WORKDIR /app
 
