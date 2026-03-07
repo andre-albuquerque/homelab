@@ -21,11 +21,11 @@ def call (body) {
       HARBOR_URL_PARAMS="with_scan_overview=true"
 
       while [ "$SEVERITY" == "null" ]; do
-        SEVERITY=$(curl -X GET \
+        SEVERITY=$(curl -s \
           "${HARBOR_URL}/${HARBOR_PATH}?${HARBOR_URL_PARAMS}" \
           -H "accept: application/json" \
           -H "authorization: Basic ${HARBOR_CREDENTIALS}" \
-          | jq -r '.scan_overview | to_entries | .[].value.severity'
+          | jq -r '.scan_overview? | to_entries[]?.value.severity // "null"'
         )
  
         echo "sleep: ${SLEEP}s | count: ${COUNT}"
