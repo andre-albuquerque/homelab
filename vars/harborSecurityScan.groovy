@@ -25,7 +25,7 @@ def call (body) {
           "${HARBOR_URL}/${HARBOR_PATH}?${HARBOR_URL_PARAMS}" \
           -H "accept: application/json" \
           -H "authorization: Basic ${HARBOR_CREDENTIALS}" \
-          | jq -r '.scan_overview? | to_entries[]?.value.severity // "null"'
+          | jq -r 'if .scan_overview == null then "null" else (.scan_overview | to_entries[0].value.severity) end'
         )
  
         echo "sleep: ${SLEEP}s | count: ${COUNT}"
