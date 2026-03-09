@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-world-api
+  labels:
+    app: real-world-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: real-world-api
+  template:
+    metadata:
+      labels:
+        app: real-world-api
+    spec:
+      containers:
+        - name: real-world-api
+          image: harbor.andrealbuquerque.me/andrealbuquerque/real-world-api:d9670d2e82
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: NODE_ENV
+              value: "production"
