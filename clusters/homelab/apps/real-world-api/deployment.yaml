@@ -14,6 +14,8 @@ spec:
       labels:
         app: real-world-api
     spec:
+      imagePullSecrets:
+        - name: harbor-secret
       containers:
         - name: real-world-api
           image: harbor-core.harbor.svc.cluster.local/andrealbuquerque/real-world-api:d9670d2e82
