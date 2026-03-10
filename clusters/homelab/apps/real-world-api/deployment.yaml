@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: real-world-api
-          image: harbor.harbor.svc.cluster.local/andrealbuquerque/real-world-api:d9670d2e82
+          image: harbor-core.harbor.svc.cluster.local/andrealbuquerque/real-world-api:d9670d2e82
           ports:
             - containerPort: 3000
           resources:
