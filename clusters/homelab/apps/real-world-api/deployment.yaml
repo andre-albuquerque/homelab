@@ -30,4 +30,4 @@ spec:
             - name: NODE_ENV
               value: "production"
       imagePullSecrets:
-        - name: harbor-credentials
+        - name: harbor-robot
