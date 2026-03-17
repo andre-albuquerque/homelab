@@ -9,8 +9,8 @@ stringData:
     {
       "auths": {
         "harbor-registry.harbor.svc.cluster.local:5000": {
-          "username": "robot$andrealbuquerque+k8s-pull",
-          "password": "hKfAdjZoL3vy2SD3kys53aTTl04Lm0JO"
+          "username": "robot$andrealbuquerqueme+k8s-pull",
+          "password": "lEMTGOKJTPIpd8gcod5P7g7uQDZJnTSX"
         }
       }
     }
