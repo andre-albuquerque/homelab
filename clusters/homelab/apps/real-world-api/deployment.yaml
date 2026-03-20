@@ -18,7 +18,7 @@ spec:
         - name: harbor-robot
       containers:
         - name: real-world-api
-          image: harbor-registry.harbor.svc.cluster.local:5000/andrealbuquerque/real-world-api:d9670d2e82
+          image: harbor-registry.harbor.svc.cluster.local:5443/andrealbuquerque/real-world-api:d9670d2e82
           ports:
             - containerPort: 3000
           resources:
@@ -31,3 +31,11 @@ spec:
           env:
             - name: NODE_ENV
               value: "production"
+          volumeMounts:
+            - name: harbor-ca
+              mountPath: /usr/local/share/ca-certificates/harbor-ca.crt
+              subPath: ca.crt
+      volumes:
+        - name: harbor-ca
+          secret:
+            secretName: harbor-internal-ca
