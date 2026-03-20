@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: real-world-api
+  namespace: real-world
   labels:
     app: real-world-api
 spec:
@@ -16,21 +17,9 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-robot
-      initContainers:
-        - name: install-ca
-          image: alpine:3.19
-          command: ["sh", "-c"]
-          args:
-            - |
-              cp /tmp/ca.crt /usr/local/share/ca-certificates/harbor-ca.crt
-              update-ca-certificates
-          volumeMounts:
-            - name: harbor-ca
-              mountPath: /tmp/ca.crt
-              subPath: ca.crt
       containers:
         - name: real-world-api
-          image: harbor-registry.harbor.svc.cluster.local:5443/andrealbuquerque/real-world-api:d9670d2e82
+          image: harbor-registry.harbor.svc.cluster.local:5443/andrealbuquerqueme/real-world-api:d9670d2e82
           ports:
             - containerPort: 3000
           resources:
@@ -43,11 +32,3 @@ spec:
           env:
             - name: NODE_ENV
               value: "production"
-          volumeMounts:
-            - name: harbor-ca
-              mountPath: /usr/local/share/ca-certificates/harbor-ca.crt
-              subPath: ca.crt
-      volumes:
-        - name: harbor-ca
-          secret:
-            secretName: harbor-internal-ca
