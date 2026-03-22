@@ -15,6 +15,10 @@ spec:
       labels:
         app: real-world-api
     spec:
+      hostAliases:
+      - ip: "10.233.33.73"
+        hostnames:
+        - "harbor.andrealbuquerque.me"
       imagePullSecrets:
         - name: harbor-robot
       containers:

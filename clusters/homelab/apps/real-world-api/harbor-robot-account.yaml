@@ -8,10 +8,10 @@ stringData:
   .dockerconfigjson: |
     {
       "auths": {
-        "harbor-registry.harbor.svc.cluster.local:5000": {
+        "harbor.andrealbuquerque.me": {
           "username": "robot$andrealbuquerqueme+k8s-pull",
           "password": "PbcFRPbQ0STgDlF86IjG7fCegBG7SQTp",
-          "auth": "cm9ib3QkYW5kcmVhbGJ1cXVlcnF1ZStrOHMtcHVsbDpoS2ZBZGpab0wzdnkyU0Qza3lzNTNhVFRsMDRMbTBKTw=="
+          "auth": "cm9ib3QkYW5kcmVhbGJ1cXVlcnF1ZStrOHMtcHVsbDpQYmNGUlBiUTBTVGdEbEY4NklqRzdmQ2VnQkc3U1FUcA=="
         }
       }
     }
