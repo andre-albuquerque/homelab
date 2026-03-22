@@ -17,10 +17,6 @@ spec:
     spec:
       imagePullSecrets:
         - name: harbor-robot
-      hostAliases:
-      - ip: "10.233.51.178"
-        hostnames:
-        - "harbor.andrealbuquerque.me"
       containers:
         - name: real-world-api
           image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:d9670d2e82
