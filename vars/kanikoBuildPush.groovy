@@ -17,6 +17,7 @@ def call (body) {
       /kaniko/executor \
         --dockerfile $(pwd)/docker/Dockerfile \
         --insecure \
+        --skip-tls-verify \
         --destination "${DESTINATION}" \
         --context $(pwd)
 
