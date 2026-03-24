@@ -13,7 +13,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     CGO_ENABLED=1 \
     go build -ldflags="-s -w" -o app
 
-RUN mkdir /app/data
+RUN mkdir -p /app/data
 
 # ---------- Runtime ----------
 FROM gcr.io/distroless/base-debian12
