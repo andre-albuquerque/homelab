@@ -16,7 +16,7 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 RUN mkdir -p /app/data
 
 # ---------- Runtime ----------
-FROM gcr.io/distroless/base-debian12
+FROM gcr.io/distroless/cc-debian12
 
 WORKDIR /app
 COPY --from=builder /app/app .
