@@ -25,8 +25,8 @@ spec:
       requests:
         memory: "1Gi"
       limits:
-        memory: "2Gi"
-        ephemeral-storage: "2Gi"
+        memory: "4Gi"
+        ephemeral-storage: "4Gi"
     volumeMounts:
       - name: harbor-credentials
         mountPath: /kaniko/.docker
