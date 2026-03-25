@@ -19,7 +19,7 @@ spec:
         - name: harbor-robot
       containers:
         - name: real-world-api
-          image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:ef1d133930
+          image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:d4716a8f3c
           ports:
             - containerPort: 3000
           resources:
