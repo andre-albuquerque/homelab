@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: real-world
 
 resources:
+  - harbor-robot-account
   - deployment.yaml
   - service.yaml
   - ingress.yaml
