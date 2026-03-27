@@ -16,18 +16,16 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -ldflags="-s -w -extldflags '-static'" -o app
 
 RUN mkdir -p /app/data
+# Set the numeric ID for nonroot (usually 65532 in distroless)
+RUN chown -R 65532:65532 /app/data
 
 # ---------- Runtime ----------
-# Use 'base' or 'cc' to ensure basic C compatibility layer is present
 FROM gcr.io/distroless/cc-debian12
 
 WORKDIR /app
-COPY --from=builder /app/app .
-COPY --from=builder /app/data /app/data
+# Use --chown to set ownership during the copy process
+COPY --from=builder --chown=nonroot:nonroot /app/app .
+COPY --from=builder --chown=nonroot:nonroot /app/data /app/data
 
-# Ensure the nonroot user has permission to write to the sqlite DB
-USER root
-RUN chown -R nonroot:nonroot /app/data
 USER nonroot:nonroot
-
 ENTRYPOINT ["./app"]
