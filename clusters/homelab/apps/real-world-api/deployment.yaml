@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: real-world-api
-  namespace: real-world
+  namespace: real-world-api
   labels:
     app: real-world-api
 spec:
@@ -21,7 +21,7 @@ spec:
         - name: real-world-api
           image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:7797481823
           ports:
-            - containerPort: 3000
+            - containerPort: 8080
           resources:
             requests:
               cpu: "100m"

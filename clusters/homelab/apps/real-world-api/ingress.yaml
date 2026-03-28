@@ -2,13 +2,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: real-world-api
-  namespace: real-world
+  namespace: real-world-api
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
-    - host: real-api.andrealbuquerque.me
+    - host: api.andrealbuquerque.me
       http:
         paths:
           - path: /
