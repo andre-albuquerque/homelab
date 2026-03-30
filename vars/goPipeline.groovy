@@ -51,6 +51,17 @@ def call (body) {
           }
         }
       }
+      stage('Deploy to Production') {
+        steps {
+          deployProd.groovy{}
+        }
+        when {
+          anyOf {
+            branch pattern: 'main'
+            branch pattern: 'master'
+          }
+        }
+      }
     }
   }
 }
