@@ -6,6 +6,8 @@ def call (body) {
 	
 	container('alpine') {
     sh '''
+			apk add git
+			
 			GITEA_URL=http://gitea.andrealbuquerque.me
 			REPO=andrealbuquerqueme/flux-cluster
 			APP_NAME=real-world-api
