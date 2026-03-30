@@ -8,6 +8,9 @@ spec:
   - ip: "192.168.1.150"
     hostnames:
     - "harbor.andrealbuquerque.me"
+  - ip: "192.168.1.200"
+    hostnames:
+    - "gitea.andrealbuquerque.me"
   containers:
   - name: go
     image: golang:1.25-bookworm
