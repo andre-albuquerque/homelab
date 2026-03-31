@@ -52,6 +52,9 @@ def call (body) {
         }
       }
       stage('Deploy to Production') {
+        environment {
+          JENKINS_SSH_PRIVATE_KEY = credentials('jenkins-gitea')
+        }
         steps {
           deployProd{}
         }
