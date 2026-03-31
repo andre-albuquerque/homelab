@@ -8,7 +8,7 @@ def call (body) {
     sh '''
 			apk add git openssh-client
 
-			GITEA_SSH_HOST="19 192.168.1.200"
+			GITEA_SSH_HOST="192.168.1.200"
 			REPO="andrealbuquerqueme/flux-cluster"
 			APP_NAME="real-world-api"
 			IMAGE_TAG="$(cat /artifacts/prod.artifact)"
