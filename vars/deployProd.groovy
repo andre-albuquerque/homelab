@@ -8,13 +8,13 @@ def call (body) {
     sh '''
 			apk add git openssh-client
 
-			GITEA_SSH_HOST="gitea.andrealbuquerque.me"
+			GITEA_SSH_HOST="19 192.168.1.200"
 			REPO="andrealbuquerqueme/flux-cluster"
 			APP_NAME="real-world-api"
 			IMAGE_TAG="$(cat /artifacts/prod.artifact)"
 
 			mkdir -p /root/.ssh
-			ssh-keyscan -H gitea.andrealbuquerque.me >> /root/.ssh/known_hosts
+			ssh-keyscan -H $GITEA_SSH_HOST >> /root/.ssh/known_hosts
 			chmod 700 /root/.ssh
 			chmod 600 /root/.ssh/known_hosts
 
