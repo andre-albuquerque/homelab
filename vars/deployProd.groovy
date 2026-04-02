@@ -6,7 +6,7 @@ def call(body) {
 
     container('alpine') {
         withCredentials([sshUserPrivateKey(
-            credentialsId: 'jenkins-ssh-key',
+            credentialsId: 'jenkins-gitea',
             keyFileVariable: 'JENKINS_SSH_PRIVATE_KEY'
         )]) {
 					sh '''
