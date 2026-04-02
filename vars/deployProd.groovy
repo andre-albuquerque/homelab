@@ -31,7 +31,7 @@ def call(body) {
 
                 cd flux-cluster
 
-                sed -i "/image: .*${APP_NAME}:/ s|:[^[:space:]]*|:${IMAGE_TAG}|" \
+                sed -i "s|\(image: .*${APP_NAME}:\).*|\1${IMAGE_TAG}|" \
                     clusters/homelab/apps/real-world-api/deployment.yaml
 
                 git config user.name "jenkins"
