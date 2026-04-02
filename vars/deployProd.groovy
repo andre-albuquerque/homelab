@@ -1,38 +1,47 @@
-def call (body) {
-	def settings = [:]
-  body.resolveStrategy = Closure.DELEGATE_FIRST
-  body.delegate = settings
-  body()
-	
-	container('alpine') {
-    sh '''
-			apk add git openssh-client
+def call(body) {
+    def settings = [:]
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = settings
+    body()
 
-			GITEA_SSH_HOST="192.168.1.200"
-			REPO="andrealbuquerqueme/flux-cluster"
-			APP_NAME="real-world-api"
-			IMAGE_TAG="$(cat /artifacts/prod.artifact)"
+    container('alpine') {
+        withCredentials([sshUserPrivateKey(
+            credentialsId: 'jenkins-ssh-key',
+            keyFileVariable: 'JENKINS_SSH_PRIVATE_KEY'
+        )]) {
+					sh '''
+						apk add --no-cache git openssh-client
 
-			mkdir -p /root/.ssh
-			ssh-keyscan -H $GITEA_SSH_HOST >> /root/.ssh/known_hosts
-			chmod 700 /root/.ssh
-			chmod 600 /root/.ssh/known_hosts
+						GITEA_SSH_HOST="192.168.1.200"
+						REPO="andrealbuquerqueme/flux-cluster"
+						APP_NAME="real-world-api"
+						IMAGE_TAG="$(cat /artifacts/prod.artifact)"
 
-			eval $(ssh-agent -s)
-			chmod 600 $JENKINS_SSH_PRIVATE_KEY
-			ssh-add $JENKINS_SSH_PRIVATE_KEY
+						mkdir -p /root/.ssh
+						ssh-keyscan -H "$GITEA_SSH_HOST" >> /root/.ssh/known_hosts
+						chmod 700 /root/.ssh
+						chmod 600 /root/.ssh/known_hosts
 
-			git clone -v git@${GITEA_SSH_HOST}:${REPO}.git
-			cd flux-cluster
+						eval $(ssh-agent -s)
+						chmod 600 "$JENKINS_SSH_PRIVATE_KEY"
+						ssh-add "$JENKINS_SSH_PRIVATE_KEY"
 
-			sed -i "/image: .*${APP_NAME}:/ s|:[^[:space:]]*|:${IMAGE_TAG}|" \
-					clusters/homelab/apps/real-world-api/deployment.yaml
+						GIT_SSH_COMMAND="ssh -i $JENKINS_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no" \
+						git clone git@${GITEA_SSH_HOST}:${REPO}.git
 
-			git config user.name "jenkins"
-			git config user.email "jenkins@ci.local"
-			git add .
-			git commit -m "Deploy to production - build ${IMAGE_TAG}"
-			git push origin main
-    '''
-	}
+						cd flux-cluster
+
+						sed -i "/image: .*${APP_NAME}:/ s|:[^[:space:]]*|:${IMAGE_TAG}|" \
+								clusters/homelab/apps/real-world-api/deployment.yaml
+
+						git config user.name "jenkins"
+						git config user.email "jenkins@ci.local"
+						git add .
+						git commit -m "Deploy to production - build ${IMAGE_TAG}"
+
+						GIT_SSH_COMMAND="ssh -i $JENKINS_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no" \
+						git push origin main
+					'''
+        }
+    }
 }

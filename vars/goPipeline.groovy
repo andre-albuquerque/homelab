@@ -52,17 +52,14 @@ def call (body) {
         }
       }
       stage('Deploy to Production') {
-        environment {
-          JENKINS_SSH_PRIVATE_KEY = credentials('jenkins-gitea')
-        }
-        steps {
-          deployProd{}
-        }
         when {
           anyOf {
             branch pattern: 'main'
             branch pattern: 'master'
           }
+        }
+        steps {
+          deployProd {}
         }
       }
     }
