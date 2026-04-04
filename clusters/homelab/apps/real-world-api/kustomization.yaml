@@ -4,8 +4,16 @@ kind: Kustomization
 namespace: real-world-api
 
 resources:
-  - harbor-robot-account.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
   - namespace.yaml
+
+secretGenerator:
+  - name: harbor-robot
+    files:
+      - .dockerconfigjson=harbor.json
+    type: kubernetes.io/dockerconfigjson
+
+generatorOptions:
+  disableNameSuffixHash: false

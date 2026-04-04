@@ -1,0 +1,9 @@
+{
+  "auths": {
+    "harbor.andrealbuquerque.me": {
+      "username": "robot$andrealbuquerqueme+k8s-pull",
+      "password": "PbcFRPbQ0STgDlF86IjG7fCegBG7SQTp",
+      "auth": "cm9ib3QkYW5kcmVhbGJ1cXVlcnF1ZStrOHMtcHVsbDpQYmNGUlBiUTBTVGdEbEY4NklqRzdmQ2VnQkc3U1FUcA=="
+    }
+  }
+}
