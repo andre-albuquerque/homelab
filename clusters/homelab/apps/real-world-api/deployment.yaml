@@ -19,7 +19,7 @@ spec:
         - name: harbor-robot
       containers:
         - name: real-world-api
-          image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:f5cc7bbfcb
+          image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:2929526e13
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
