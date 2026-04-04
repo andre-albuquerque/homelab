@@ -1,0 +1,6 @@
+# kustomizeconfig.yaml
+nameReference:
+  - kind: Secret
+    fieldSpecs:
+      - path: spec/template/spec/imagePullSecrets/name
+        kind: Deployment

@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: real-world-api
 
 resources:
+  - kustomizeconfig.yaml
   - deployment.yaml
   - service.yaml
   - ingress.yaml
