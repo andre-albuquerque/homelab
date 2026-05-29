@@ -413,8 +413,8 @@ controller:
   installPlugins:
     - kubernetes:4416.v2ea_b_5372da_a_e
     - workflow-aggregator:608.v67378e9d3db_1
-    - git:5.8.1
-    - configuration-as-code:2031.veb_a_fdda_b_3ffd
+    - configuration-as-code
+    - git
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -731,12 +731,12 @@ controller:
     labels: {}
     # -- Ingress annotations
     annotations:
-      kubernetes.io/tls-acme: "true"
-      cert-manager.io/cluster-issuer: "internal-ca-issuer"
+      #kubernetes.io/tls-acme: "true"
+      #cert-manager.io/cluster-issuer: "internal-ca-issuer"
 
-      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/ssl-redirect: "false"
       ingress.kubernetes.io/proxy-body-size: "0"
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
       # kubernetes.io/ingress.class: nginx
       # kubernetes.io/tls-acme: "true"
@@ -754,10 +754,10 @@ controller:
     # -- Hostname to serve assets from
     resourceRootUrl:
     # -- Ingress TLS configuration
-    tls:
-      - secretName: "jenkins-tls-secret"
-        hosts:
-          - jenkins.andrealbuquerque.me
+    #tls:
+    #  - secretName: "jenkins-tls-secret"
+    #    hosts:
+    #      - jenkins.andrealbuquerque.me
 
   # often you want to have your controller all locked down and private,
   # but you still want to get webhooks from your SCM

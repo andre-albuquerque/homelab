@@ -1,0 +1,47 @@
+logging {
+  level  = "debug"
+  format = "logfmt"
+}
+
+discovery.kubernetes "all_pods" {
+  role = "pod"
+}
+
+discovery.relabel "pod_logs" {
+  targets = discovery.kubernetes.all_pods.targets
+
+  rule {
+    source_labels = ["__meta_kubernetes_namespace"]
+    target_label  = "namespace"
+  }
+
+  rule {
+    source_labels = ["__meta_kubernetes_pod_name"]
+    target_label  = "pod"
+  }
+
+  rule {
+    source_labels = ["__meta_kubernetes_pod_container_name"]
+    target_label  = "container"
+  }
+
+  rule {
+    target_label = "__path__"
+    replacement  = "/var/log/containers/*.log"
+  }
+}
+
+local.file_match "pod_logs" {
+  path_targets = discovery.relabel.pod_logs.output
+}
+
+loki.source.file "pod_logs" {
+  targets    = local.file_match.pod_logs.targets
+  forward_to = [loki.write.vm_loki.receiver]
+}
+
+loki.write "vm_loki" {
+  endpoint {
+    url = "http://loki.loki.svc.cluster.local:3100/loki/api/v1/push"
+  }
+}

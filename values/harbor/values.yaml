@@ -8,7 +8,7 @@ expose:
     # Note: if the "expose.type" is "ingress" and TLS is disabled,
     # the port must be included in the command when pulling/pushing images.
     # Refer to https://github.com/goharbor/harbor/issues/5291 for details.
-    enabled: true
+    enabled: false
     # The source of the tls certificate. Set as "auto", "secret"
     # or "none" and fill the information in the corresponding section
     # 1) auto: generate the tls certificate automatically
@@ -25,7 +25,7 @@ expose:
       # The name of secret which contains keys named:
       # "tls.crt" - the certificate
       # "tls.key" - the private key
-      secretName: "harbor-tls-secret"
+      secretName: ""
   ingress:
     hosts:
       core: harbor.andrealbuquerque.me
@@ -42,12 +42,12 @@ expose:
     annotations:
       # note different ingress controllers may require a different ssl-redirect annotation
       # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
-      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/ssl-redirect: "false"
       ingress.kubernetes.io/proxy-body-size: "0"
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
       nginx.ingress.kubernetes.io/proxy-body-size: "0"
-      kubernetes.io/tls-acme: "true"
-      cert-manager.io/cluster-issuer: "internal-ca-issuer"
+      kubernetes.io/tls-acme: "false"
+      #cert-manager.io/cluster-issuer: "internal-ca-issuer"
     # ingress-specific labels
     labels: {}
   route:
@@ -300,7 +300,7 @@ internalTLS:
   # 1) "auto" will generate cert automatically
   # 2) "manual" need provide cert file manually in following value
   # 3) "secret" internal certificates from secret
-  certSource: "auto"
+  certSource: "secret"
   # The content of trust ca, only available when `certSource` is "manual"
   trustCa: ""
   # core related cert configuration
@@ -367,7 +367,7 @@ imagePullSecrets:
 # The update strategy for deployments with persistent volumes(jobservice, registry): "RollingUpdate" or "Recreate"
 # Set it as "Recreate" when "RWM" for volumes isn't supported
 updateStrategy:
-  type: RollingUpdate
+  type: Recreate
 
 # debug, info, warning, error or fatal
 logLevel: info
@@ -503,7 +503,7 @@ containerSecurityContext:
 nginx:
   image:
     repository: docker.io/goharbor/nginx-photon
-    tag: dev
+    tag: v2.14.3
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -538,7 +538,7 @@ nginx:
 portal:
   image:
     repository: docker.io/goharbor/harbor-portal
-    tag: dev
+    tag: v2.14.3
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -582,7 +582,7 @@ portal:
 core:
   image:
     repository: docker.io/goharbor/harbor-core
-    tag: dev
+    tag: v2.14.3
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -596,7 +596,10 @@ core:
   ## Startup probe values
   startupProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
+    timeoutSeconds: 10
+    failureThreshold: 30
+    periodSeconds: 10
   # resources:
   #  requests:
   #    memory: 256Mi
@@ -675,7 +678,7 @@ core:
 jobservice:
   image:
     repository: docker.io/goharbor/harbor-jobservice
-    tag: dev
+    tag: v2.14.3
   replicas: 1
   podDisruptionBudget:
     enabled: false
@@ -745,7 +748,7 @@ registry:
   registry:
     image:
       repository: docker.io/goharbor/registry-photon
-      tag: dev
+      tag: v2.14.3
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -754,7 +757,7 @@ registry:
   controller:
     image:
       repository: docker.io/goharbor/harbor-registryctl
-      tag: dev
+      tag: v2.14.3
     # resources:
     #  requests:
     #    memory: 256Mi
@@ -803,10 +806,10 @@ registry:
   # Key within the existing secret for the registry service secret
   existingSecretKey: REGISTRY_HTTP_SECRET
   # If true, the registry returns relative URLs in Location headers. The client is responsible for resolving the correct URL.
-  relativeurls: false
+  relativeurls: true
   credentials:
-    username: "harbor_registry_user"
-    password: "harbor_registry_password"
+    username: ""
+    password: ""
     # If using existingSecret, the key must be REGISTRY_PASSWD and REGISTRY_HTPASSWD
     existingSecret: ""
     # Login and password in htpasswd string format. Excludes `registry.credentials.username`  and `registry.credentials.password`. May come in handy when integrating with tools like argocd or flux. This allows the same line to be generated each time the template is rendered, instead of the `htpasswd` function from helm, which generates different lines each time because of the salt.
@@ -839,7 +842,7 @@ trivy:
     # repository the repository for Trivy adapter image
     repository: docker.io/goharbor/trivy-adapter-photon
     # tag the tag for Trivy adapter image
-    tag: dev
+    tag: v2.14.3
   # set the service account to be used, default if left empty
   serviceAccountName: ""
   # mount the service account token
@@ -948,7 +951,7 @@ database:
   internal:
     image:
       repository: docker.io/goharbor/harbor-db
-      tag: dev
+      tag: v2.14.3
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -967,6 +970,10 @@ database:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+    podSecurityContext:
+      fsGroup: 999
+    containerSecurityContext:
+      runAsUser: 999
     ## The priority class to run the pod as
     priorityClassName:
     # containers to be run before the controller's container starts.
@@ -1028,7 +1035,7 @@ redis:
   internal:
     image:
       repository: docker.io/goharbor/redis-photon
-      tag: dev
+      tag: v2.14.3
     # set the service account to be used, default if left empty
     serviceAccountName: ""
     # mount the service account token
@@ -1098,7 +1105,7 @@ redis:
 exporter:
   image:
     repository: docker.io/goharbor/harbor-exporter
-    tag: dev
+    tag: v2.14.3
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
@@ -1129,3 +1136,9 @@ exporter:
   #   whenUnsatisfiable: DoNotSchedule
   cacheDuration: 23
   cacheCleanInterval: 14400
+registry:
+  auth:
+    token:
+      issuer: harbor-token-issuer
+      realm: https://harbor.andrealbuquerque.me/service/token
+      service: harbor-registry

@@ -7,6 +7,12 @@ repositories:
     url: https://charts.longhorn.io
   - name: jetstack
     url: https://charts.jetstack.io
+  - name: prometheus
+    url: https://prometheus-community.github.io/helm-charts
+  - name: alloy
+    url: https://grafana.github.io/helm-charts
+  - name: loki
+    url: https://grafana-community.github.io/helm-charts
 
 releases:
   - name: ingress-nginx
@@ -48,3 +54,27 @@ releases:
     version: 1.20.0
     values:
       - values/cert-manager/values.yaml
+
+  - name: prometheus
+    namespace: prometheus
+    createNamespace: true
+    chart: prometheus/prometheus
+    version: 29.2.0
+    values:
+      - values/prometheus/values.yaml
+
+  - name: alloy
+    namespace: alloy
+    createNamespace: true
+    chart: grafana/alloy
+    version: 1.7.0
+    values:
+      - values/alloy/values.yaml
+
+  - name: loki
+    namespace: loki
+    createNamespace: true
+    chart: grafana-community/loki
+    version: 17.1.1
+    values:
+    - values/loki/values.yaml

@@ -1,1 +1,6 @@
 *.key
+*.crt
+*.cnf
+*.csr
+certs/ca.crt
+certs/
