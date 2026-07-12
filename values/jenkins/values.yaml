@@ -584,13 +584,12 @@ controller:
       # -- Port for sidecar health probes
       healthPort: 8060
       resources:
-        {}
-        #   limits:
-        #     cpu: 100m
-        #     memory: 100Mi
-        #   requests:
-        #     cpu: 50m
-        #     memory: 50Mi
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 100m
+          memory: 100Mi
       # -- Enables additional volume mounts for the config auto-reload container
       additionalVolumeMounts:
         []
@@ -1134,7 +1133,7 @@ agent:
   # -- Allocate pseudo tty to the side container
   TTYEnabled: false
   # -- Max number of agents to launch for a whole cluster.
-  containerCap: 10
+  containerCap: 3
   # -- Max number of agents to launch for this type of agent
   instanceCap: 2147483647
   # -- Agent Pod base name

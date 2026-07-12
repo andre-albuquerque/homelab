@@ -514,10 +514,13 @@ nginx:
     minAvailable: 1
     # maxUnavailable: 1
   revisionHistoryLimit: 10
-  # resources:
-  #  requests:
-  #    memory: 256Mi
-  #    cpu: 100m
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
   extraEnvVars: []
   nodeSelector: {}
   tolerations: []
@@ -525,9 +528,9 @@ nginx:
   # Spread Pods across failure-domains like regions, availability zones or nodes
   topologySpreadConstraints: []
   # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
+  # topologyKey: topology.kubernetes.io/zone
+  # nodeTaintsPolicy: Honor
+  # whenUnsatisfiable: DoNotSchedule
   ## Additional deployment annotations
   podAnnotations: {}
   ## Additional deployment labels
@@ -549,10 +552,13 @@ portal:
     minAvailable: 1
     # maxUnavailable: 1
   revisionHistoryLimit: 10
-  # resources:
-  #  requests:
-  #    memory: 256Mi
-  #    cpu: 100m
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 25m
+    limits:
+      memory: 128Mi
+      cpu: 100m
   extraEnvVars: []
   nodeSelector: {}
   tolerations: []
@@ -560,9 +566,9 @@ portal:
   # Spread Pods across failure-domains like regions, availability zones or nodes
   topologySpreadConstraints: []
   # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
+  # topologyKey: topology.kubernetes.io/zone
+  # nodeTaintsPolicy: Honor
+  # whenUnsatisfiable: DoNotSchedule
   ## Additional deployment annotations
   podAnnotations: {}
   ## Additional deployment labels
@@ -600,10 +606,13 @@ core:
     timeoutSeconds: 10
     failureThreshold: 30
     periodSeconds: 10
-  # resources:
-  #  requests:
-  #    memory: 256Mi
-  #    cpu: 100m
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 512Mi
+      cpu: 500m
   extraEnvVars: []
   nodeSelector: {}
   tolerations: []
@@ -611,9 +620,9 @@ core:
   # Spread Pods across failure-domains like regions, availability zones or nodes
   topologySpreadConstraints: []
   # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
+  # topologyKey: topology.kubernetes.io/zone
+  # nodeTaintsPolicy: Honor
+  # whenUnsatisfiable: DoNotSchedule
   ## Additional deployment annotations
   podAnnotations: {}
   ## Additional deployment labels
@@ -692,10 +701,13 @@ jobservice:
   automountServiceAccountToken: false
   replicas: 1
   revisionHistoryLimit: 10
-  # resources:
-  #   requests:
-  #     memory: 256Mi
-  #     cpu: 100m
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
   extraEnvVars: []
   nodeSelector: {}
   tolerations: []
@@ -703,9 +715,9 @@ jobservice:
   # Spread Pods across failure-domains like regions, availability zones or nodes
   topologySpreadConstraints:
   # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
+  # topologyKey: topology.kubernetes.io/zone
+  # nodeTaintsPolicy: Honor
+  # whenUnsatisfiable: DoNotSchedule
   ## Additional deployment annotations
   podAnnotations: {}
   ## Additional deployment labels
@@ -749,218 +761,38 @@ registry:
     image:
       repository: docker.io/goharbor/registry-photon
       tag: v2.14.3
-    # resources:
-    #  requests:
-    #    memory: 256Mi
-    #    cpu: 100m
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 50m
+      limits:
+        memory: 512Mi
+        cpu: 500m
     extraEnvVars: []
+    controller:
+      image:
+        repository: docker.io/goharbor/harbor-registryctl
+        tag: v2.14.3
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 25m
+      limits:
+        memory: 256Mi
+        cpu: 200m
+      extraEnvVars: []
   controller:
     image:
       repository: docker.io/goharbor/harbor-registryctl
       tag: v2.14.3
-    # resources:
-    #  requests:
-    #    memory: 256Mi
-    #    cpu: 100m
-    extraEnvVars: []
-  # set the service account to be used, default if left empty
-  serviceAccountName: ""
-  # mount the service account token
-  automountServiceAccountToken: false
-  replicas: 1
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    # maxUnavailable: 1
-  revisionHistoryLimit: 10
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  # Spread Pods across failure-domains like regions, availability zones or nodes
-  topologySpreadConstraints: []
-  # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
-  ## Additional deployment annotations
-  podAnnotations: {}
-  ## Additional deployment labels
-  podLabels: {}
-  ## The priority class to run the pod as
-  priorityClassName:
-  # containers to be run before the controller's container starts.
-  initContainers: []
-  # Example:
-  #
-  # - name: wait
-  #   image: busybox
-  #   command: [ 'sh', '-c', "sleep 20" ]
-  # Secret is used to secure the upload state from client
-  # and registry storage backend.
-  # See: https://github.com/distribution/distribution/blob/release/2.8/docs/configuration.md#http
-  # If a secret key is not specified, Helm will generate one.
-  # Must be a string of 16 chars.
-  secret: ""
-  # Use an existing secret resource
-  existingSecret: ""
-  # Key within the existing secret for the registry service secret
-  existingSecretKey: REGISTRY_HTTP_SECRET
-  # If true, the registry returns relative URLs in Location headers. The client is responsible for resolving the correct URL.
-  relativeurls: true
-  credentials:
-    username: ""
-    password: ""
-    # If using existingSecret, the key must be REGISTRY_PASSWD and REGISTRY_HTPASSWD
-    existingSecret: ""
-    # Login and password in htpasswd string format. Excludes `registry.credentials.username`  and `registry.credentials.password`. May come in handy when integrating with tools like argocd or flux. This allows the same line to be generated each time the template is rendered, instead of the `htpasswd` function from helm, which generates different lines each time because of the salt.
-    # htpasswdString: "harbor_registry_user:$2a$05$IPnI.TSgP8ek1/ESjkULVemA.A3nSXPdN80ljsmcun7FtE3ViSYUq" # example string, bcrypt is the only accepted hashing algorithm in htpasswd here.
-    htpasswdString: ""
-  middleware:
-    enabled: false
-    type: cloudFront
-    cloudFront:
-      baseurl: example.cloudfront.net
-      keypairid: KEYPAIRID
-      duration: 3000s
-      ipfilteredby: none
-      # The secret key that should be present is CLOUDFRONT_KEY_DATA, which should be the encoded private key
-      # that allows access to CloudFront
-      privateKeySecret: "my-secret"
-  # enable purge _upload directories
-  upload_purging:
-    enabled: true
-    # remove files in _upload directories which exist for a period of time, default is one week.
-    age: 168h
-    # the interval of the purge operations
-    interval: 24h
-    dryrun: false
-
-trivy:
-  # enabled the flag to enable Trivy scanner
-  enabled: true
-  image:
-    # repository the repository for Trivy adapter image
-    repository: docker.io/goharbor/trivy-adapter-photon
-    # tag the tag for Trivy adapter image
-    tag: v2.14.3
-  # set the service account to be used, default if left empty
-  serviceAccountName: ""
-  # mount the service account token
-  automountServiceAccountToken: false
-  # replicas the number of Pod replicas
-  replicas: 1
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    # maxUnavailable: 1
-
   resources:
     requests:
-      cpu: 200m
-      memory: 512Mi
+      memory: 256Mi
+      cpu: 100m
     limits:
-      cpu: 1
       memory: 1Gi
-  extraEnvVars: []
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-  # Spread Pods across failure-domains like regions, availability zones or nodes
-  topologySpreadConstraints: []
-  # - maxSkew: 1
-  #   topologyKey: topology.kubernetes.io/zone
-  #   nodeTaintsPolicy: Honor
-  #   whenUnsatisfiable: DoNotSchedule
-  ## Additional deployment annotations
-  podAnnotations: {}
-  ## Additional deployment labels
-  podLabels: {}
-  ## The priority class to run the pod as
-  priorityClassName:
-  # containers to be run before the controller's container starts.
-  initContainers: []
-  # Example:
-  #
-  # - name: wait
-  #   image: busybox
-  #   command: [ 'sh', '-c', "sleep 20" ]
-  # debugMode the flag to enable Trivy debug mode with more verbose scanning log
-  debugMode: false
-  # vulnType a comma-separated list of vulnerability types. Possible values are `os` and `library`.
-  vulnType: "os,library"
-  # severity a comma-separated list of severities to be checked
-  severity: "UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL"
-  # ignoreUnfixed the flag to display only fixed vulnerabilities
-  ignoreUnfixed: false
-  # insecure the flag to skip verifying registry certificate
-  insecure: false
-  # gitHubToken the GitHub access token to download Trivy DB
-  #
-  # Trivy DB contains vulnerability information from NVD, Red Hat, and many other upstream vulnerability databases.
-  # It is downloaded by Trivy from the GitHub release page https://github.com/aquasecurity/trivy-db/releases and cached
-  # in the local file system (`/home/scanner/.cache/trivy/db/trivy.db`). In addition, the database contains the update
-  # timestamp so Trivy can detect whether it should download a newer version from the Internet or use the cached one.
-  # Currently, the database is updated every 12 hours and published as a new release to GitHub.
-  #
-  # Anonymous downloads from GitHub are subject to the limit of 60 requests per hour. Normally such rate limit is enough
-  # for production operations. If, for any reason, it's not enough, you could increase the rate limit to 5000
-  # requests per hour by specifying the GitHub access token. For more details on GitHub rate limiting please consult
-  # https://developer.github.com/v3/#rate-limiting
-  #
-  # You can create a GitHub token by following the instructions in
-  # https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
-  gitHubToken: ""
-  # skipUpdate the flag to disable Trivy DB downloads from GitHub
-  #
-  # You might want to set the value of this flag to `true` in test or CI/CD environments to avoid GitHub rate limiting issues.
-  # If the value is set to `true` you have to manually download the `trivy.db` file and mount it in the
-  # `/home/scanner/.cache/trivy/db/trivy.db` path.
-  skipUpdate: false
-  # skipJavaDBUpdate If the flag is enabled you have to manually download the `trivy-java.db` file and mount it in the
-  # `/home/scanner/.cache/trivy/java-db/trivy-java.db` path
-  skipJavaDBUpdate: false
-  # The dbRepository and javaDBRepository flags can take multiple values, improving reliability when downloading databases.
-  # Databases are downloaded in priority order until one is successful.
-  # An attempt to download from the next repository is only made if a temporary error is received (e.g. status 429 or 5xx).
-  #
-  # OCI repository(ies) to retrieve the trivy vulnerability database in order of priority
-  dbRepository:
-    - "mirror.gcr.io/aquasec/trivy-db"
-    - "ghcr.io/aquasecurity/trivy-db"
-  # OCI repository(ies) to retrieve the Java trivy vulnerability database in order of priority
-  javaDBRepository:
-    - "mirror.gcr.io/aquasec/trivy-java-db"
-    - "ghcr.io/aquasecurity/trivy-java-db"
-  # The offlineScan option prevents Trivy from sending API requests to identify dependencies.
-  #
-  # Scanning JAR files and pom.xml may require Internet access for better detection, but this option tries to avoid it.
-  # For example, the offline mode will not try to resolve transitive dependencies in pom.xml when the dependency doesn't
-  # exist in the local repositories. It means a number of detected vulnerabilities might be fewer in offline mode.
-  # It would work if all the dependencies are in local.
-  # This option doesn’t affect DB download. You need to specify skipUpdate as well as offlineScan in an air-gapped environment.
-  offlineScan: false
-  # Comma-separated list of what security issues to detect. Defaults to `vuln`.
-  securityCheck: "vuln"
-  # The duration to wait for scan completion
-  timeout: 5m0s
-
-database:
-  # if external database is used, set "type" to "external"
-  # and fill the connection information in "external" section
-  type: internal
-  internal:
-    image:
-      repository: docker.io/goharbor/harbor-db
-      tag: v2.14.3
-    # set the service account to be used, default if left empty
-    serviceAccountName: ""
-    # mount the service account token
-    automountServiceAccountToken: false
-    # resources:
-    #  requests:
-    #    memory: 256Mi
-    #    cpu: 100m
-    # The timeout used in livenessProbe; 1 to 5 seconds
+      cpu: 500m
+  # The timeout used in livenessProbe; 1 to 5 seconds
     livenessProbe:
       timeoutSeconds: 1
     # The timeout used in readinessProbe; 1 to 5 seconds
@@ -1040,10 +872,13 @@ redis:
     serviceAccountName: ""
     # mount the service account token
     automountServiceAccountToken: false
-    # resources:
-    #  requests:
-    #    memory: 256Mi
-    #    cpu: 100m
+    resources:
+      requests:
+        memory: 64Mi
+        cpu: 25m
+      limits:
+        memory: 256Mi
+        cpu: 200m
     extraEnvVars: []
     nodeSelector: {}
     tolerations: []
@@ -1109,16 +944,19 @@ exporter:
   serviceAccountName: ""
   # mount the service account token
   automountServiceAccountToken: false
-  replicas: 1
+  replicas: 0
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-    # maxUnavailable: 1
+  # maxUnavailable: 1
   revisionHistoryLimit: 10
-  # resources:
-  #  requests:
-  #    memory: 256Mi
-  #    cpu: 100m
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 25m
+    limits:
+      memory: 128Mi
+      cpu: 100m
   extraEnvVars: []
   podAnnotations: {}
   ## Additional deployment labels

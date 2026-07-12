@@ -1,0 +1,20 @@
+# Resource limits patch for MetalLB speaker DaemonSet.
+# Apply with: kubectl patch daemonset speaker -n metallb-system --patch-file manifests/metallb/metallb-speaker-resources-patch.yaml
+# Note: these limits are not persistent across MetalLB reinstalls (installed via kubectl apply from upstream manifests).
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: speaker
+  namespace: metallb-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: speaker
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

@@ -403,7 +403,13 @@ extraEnv: []
 #    memory: 32Mi
 #
 # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-resources: {}
+resources:
+  requests:
+    cpu: "50m"
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "256Mi"
 
 # Pod Security Context.
 # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -925,10 +931,16 @@ webhook:
   #    cpu: 10m
   #    memory: 32Mi
   #
-  # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-  resources: {}
+# For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+resources:
+  requests:
+    cpu: "25m"
+    memory: "32Mi"
+  limits:
+    cpu: "100m"
+    memory: "128Mi"
 
-  # Liveness probe values.
+# Liveness probe values.
   # For more information, see [Container probes](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes).
   #
   # +docs:property
@@ -1331,59 +1343,14 @@ cainjector:
   #    cpu: 10m
   #    memory: 32Mi
   #
-  # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
-  resources: {}
-
-
-  # The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with
-  # matching labels.
-  # For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
-  #
-  # This default ensures that Pods are only scheduled to Linux nodes.
-  # It prevents Pods being scheduled to Windows nodes in a mixed OS cluster.
-  # +docs:property
-  nodeSelector:
-    kubernetes.io/os: linux
-
-  # A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).
-  #
-  # For example:
-  #   affinity:
-  #     nodeAffinity:
-  #      requiredDuringSchedulingIgnoredDuringExecution:
-  #        nodeSelectorTerms:
-  #        - matchExpressions:
-  #          - key: foo.bar.com/role
-  #            operator: In
-  #            values:
-  #            - master
-  affinity: {}
-
-  # A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).
-  #
-  # For example:
-  #   tolerations:
-  #   - key: foo.bar.com/role
-  #     operator: Equal
-  #     value: master
-  #     effect: NoSchedule
-  tolerations: []
-
-  # A list of Kubernetes TopologySpreadConstraints, if required. For more information, see [Topology spread constraint v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#topologyspreadconstraint-v1-core).
-  #
-  # For example:
-  #   topologySpreadConstraints:
-  #   - maxSkew: 2
-  #     topologyKey: topology.kubernetes.io/zone
-  #     whenUnsatisfiable: ScheduleAnyway
-  #     labelSelector:
-  #       matchLabels:
-  #         app.kubernetes.io/instance: cert-manager
-  #         app.kubernetes.io/component: controller
-  topologySpreadConstraints: []
-
-  # Optional additional labels to add to the CA Injector Pods.
-  podLabels: {}
+# For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "64Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
 
   # Optional additional labels to add to the CA Injector metrics Service.
   serviceLabels: {}

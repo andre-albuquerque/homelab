@@ -17,15 +17,27 @@ spec:
       - name: minio
         image: minio/minio:latest
         args:
-          - server
-          - /data
+        - server
+        - /data
+        - --console-address
+        - :9001
         env:
-          - name: MINIO_ROOT_USER
-            value: minioadmin
-          - name: MINIO_ROOT_PASSWORD
-            value: minioadmin
+        - name: MINIO_ROOT_USER
+          value: minioadmin
+        - name: MINIO_ROOT_PASSWORD
+          value: minioadmin
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
         ports:
           - containerPort: 9000
+            name: api
+          - containerPort: 9001
+            name: console
         volumeMounts:
           - name: minio-data
             mountPath: /data
@@ -43,6 +55,10 @@ spec:
   ports:
     - port: 9000
       targetPort: 9000
+      name: api
+    - port: 9001
+      targetPort: 9001
+      name: console
   selector:
     app: minio
 ---

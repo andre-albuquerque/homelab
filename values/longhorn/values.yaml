@@ -291,7 +291,7 @@ defaultSettings:
   # This setting allows you to configure CPU and memory requests/limits for CSI attacher, provisioner, resizer, snapshotter, and plugin components.
   # Supported components: csi-attacher, csi-provisioner, csi-resizer, csi-snapshotter, longhorn-csi-plugin, node-driver-registrar, longhorn-liveness-probe.
   # Notice that changing resource limits will cause CSI components to restart, which may temporarily affect volume provisioning and attach/detach operations until the components are ready. The value should be a JSON object with component names as keys and ResourceRequirements as values.
-  systemManagedCSIComponentsResourceLimits: ~
+  systemManagedCSIComponentsResourceLimits: '{"csi-attacher":{"requests":{"cpu":"50m","memory":"32Mi"},"limits":{"cpu":"200m","memory":"128Mi"}},"csi-provisioner":{"requests":{"cpu":"50m","memory":"32Mi"},"limits":{"cpu":"200m","memory":"128Mi"}},"csi-resizer":{"requests":{"cpu":"50m","memory":"32Mi"},"limits":{"cpu":"200m","memory":"128Mi"}},"csi-snapshotter":{"requests":{"cpu":"50m","memory":"32Mi"},"limits":{"cpu":"200m","memory":"128Mi"}},"longhorn-csi-plugin":{"requests":{"cpu":"100m","memory":"128Mi"},"limits":{"cpu":"500m","memory":"256Mi"}},"node-driver-registrar":{"requests":{"cpu":"25m","memory":"16Mi"},"limits":{"cpu":"100m","memory":"64Mi"}},"longhorn-liveness-probe":{"requests":{"cpu":"25m","memory":"16Mi"},"limits":{"cpu":"100m","memory":"64Mi"}}}'
   # -- PriorityClass for system-managed Longhorn components.
   # This setting can help prevent Longhorn components from being evicted under Node Pressure.
   # Notice that this will be applied to Longhorn user-deployed components by default if there are no priority class values set yet, such as `longhornManager.priorityClass`.
@@ -462,7 +462,13 @@ longhornManager:
   #   value: "value"
   #   effect: "NoSchedule"
   # -- Resource requests and limits for Longhorn Manager pods.
-  resources: ~
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   # -- Node selector for Longhorn Manager. Specify the nodes allowed to run Longhorn Manager.
   nodeSelector: {}
   ## If you want to set node selector for Longhorn Manager DaemonSet, delete the `{}` in the line above
@@ -497,18 +503,25 @@ longhornDriver:
   ## If you want to set tolerations for Longhorn Driver Deployer Deployment, delete the `[]` in the line above
   ## and uncomment this example block
   # - key: "key"
-  #   operator: "Equal"
-  #   value: "value"
-  #   effect: "NoSchedule"
+  # operator: "Equal"
+  # value: "value"
+  # effect: "NoSchedule"
   # -- Node selector for Longhorn Driver. Specify the nodes allowed to run Longhorn Driver.
   nodeSelector: {}
   ## If you want to set node selector for Longhorn Driver Deployer Deployment, delete the `{}` in the line above
   ## and uncomment this example block
-  #  label-key1: "label-value1"
-  #  label-key2: "label-value2"
+  # label-key1: "label-value1"
+  # label-key2: "label-value2"
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
 longhornUI:
   # -- Replica count for Longhorn UI.
-  replicas: 1
+  replicas: 0
   # -- PriorityClass for Longhorn UI.
   priorityClass: *defaultPriorityClassNameRef
   # -- Affinity for Longhorn UI pods. Specify the affinity you want to use for Longhorn UI.
@@ -529,16 +542,23 @@ longhornUI:
   ## If you want to set tolerations for Longhorn UI Deployment, delete the `[]` in the line above
   ## and uncomment this example block
   # - key: "key"
-  #   operator: "Equal"
-  #   value: "value"
-  #   effect: "NoSchedule"
+  # operator: "Equal"
+  # value: "value"
+  # effect: "NoSchedule"
   # -- Node selector for Longhorn UI. Specify the nodes allowed to run Longhorn UI.
   nodeSelector: {}
   ## If you want to set node selector for Longhorn UI Deployment, delete the `{}` in the line above
   ## and uncomment this example block
-  #  label-key1: "label-value1"
-  #  label-key2: "label-value2"
-ingress:
+  # label-key1: "label-value1"
+  # label-key2: "label-value2"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  ingress:
   # -- Setting that allows Longhorn to generate ingress records for the Longhorn UI service.
   enabled: false
   # -- IngressClass resource that contains ingress configuration, including the name of the Ingress controller.

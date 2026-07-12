@@ -1,0 +1,20 @@
+# Resource limits patch for MetalLB controller.
+# Apply with: kubectl patch deployment controller -n metallb-system --patch-file manifests/metallb/metallb-resources-patch.yaml
+# Note: these limits are not persistent across MetalLB reinstalls (installed via kubectl apply from upstream manifests).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller
+  namespace: metallb-system
+spec:
+  template:
+    spec:
+      containers:
+      - name: controller
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi

@@ -13,6 +13,8 @@ repositories:
     url: https://grafana.github.io/helm-charts
   - name: loki
     url: https://grafana-community.github.io/helm-charts
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
 
 releases:
   - name: ingress-nginx
@@ -77,4 +79,12 @@ releases:
     chart: grafana-community/loki
     version: 17.1.1
     values:
-    - values/loki/values.yaml
+      - values/loki/values.yaml
+
+  - name: grafana
+    namespace: grafana
+    createNamespace: true
+    chart: grafana/grafana
+    version: 10.4.1
+    values:
+      - values/grafana/values.yaml
