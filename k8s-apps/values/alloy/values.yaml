@@ -1,0 +1,218 @@
+# Configuração mínima para Grafana Alloy - Homelab
+# DaemonSet para coleta de métricas e logs
+# Otimizado para baixo consumo de recursos
+
+alloy:
+  configMap:
+    create: true
+    name: alloy-config
+    key: config.alloy
+    # Configuração Alloy mínima - coleta métricas do Kubernetes e envia para Prometheus
+    content: |
+      // Descobrir serviços do Kubernetes
+      discovery.kubernetes "pods" {
+        role = "pod"
+      }
+
+      discovery.kubernetes "nodes" {
+        role = "node"
+      }
+
+      // Coletar métricas do cAdvisor (containers)
+      prometheus.scrape "cadvisor" {
+        targets    = discovery.kubernetes.nodes.targets
+        metrics_path = "/metrics/cadvisor"
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+      }
+
+      // Coletar métricas dos nós
+      prometheus.scrape "nodes" {
+        targets    = discovery.kubernetes.nodes.targets
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+      }
+
+      // Coletar métricas de pods com annotation
+      prometheus.scrape "pods" {
+        targets = discovery.kubernetes.pods.targets
+        forward_to = [prometheus.remote_write.prometheus.receiver]
+      }
+
+      // Enviar métricas para o Prometheus
+      prometheus.remote_write "prometheus" {
+        endpoint {
+          url = "http://prometheus-server.prometheus.svc.cluster.local:80/api/v1/write"
+        }
+      }
+
+      // Coletar logs dos containers (envia para stdout/loki se configurado)
+      local.file_match "varlog" {
+        path_targets = discovery.kubernetes.pods.targets
+      }
+
+  clustering:
+    enabled: false
+
+  # Recursos mínimos
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+
+  # Security context - precisa de privilégios para coletar logs
+  securityContext:
+    privileged: false
+    runAsUser: 0
+    runAsGroup: 0
+    capabilities:
+      drop:
+        - ALL
+      add:
+        - NET_BIND_SERVICE
+
+  # Montagens necessárias
+  mounts:
+    varlog: true
+    dockercontainers: false
+
+  # Host aliases para comunicação com serviços internos
+  hostAliases:
+    - ip: 192.168.1.180
+      hostnames:
+        - loki.andrealbuquerque.me
+
+image:
+  registry: docker.io
+  repository: grafana/alloy
+  tag: null
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+rbac:
+  create: true
+  namespaces: []
+  # Rules para ClusterRole (resources cluster-scoped)
+  clusterRules:
+    - apiGroups: [""]
+      resources: ["nodes"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["nodes/proxy"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["nodes/metrics"]
+      verbs: ["get", "list", "watch"]
+    - nonResourceURLs: ["/metrics"]
+      verbs: ["get"]
+  # Rules para Role (resources namespace-scoped)
+  rules:
+    - apiGroups: ["", "discovery.k8s.io", "networking.k8s.io"]
+      resources: ["endpoints", "endpointslices", "ingresses", "pods", "services"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["pods", "pods/log", "namespaces"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["monitoring.coreos.com"]
+      resources: ["podmonitors", "servicemonitors", "probes", "scrapeconfigs"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: [""]
+      resources: ["configmaps", "secrets"]
+      verbs: ["get", "list", "watch"]
+    - apiGroups: ["apps", "extensions"]
+      resources: ["replicasets"]
+      verbs: ["get", "list", "watch"]
+
+serviceAccount:
+  create: true
+  additionalLabels: {}
+  annotations: {}
+  name: null
+  automountServiceAccountToken: true
+
+configReloader:
+  enabled: true
+  image:
+    registry: quay.io
+    repository: prometheus-operator/prometheus-config-reloader
+    tag: v0.81.0
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 5m
+      memory: 32Mi
+    limits:
+      cpu: 25m
+      memory: 64Mi
+  securityContext: {}
+
+controller:
+  type: daemonset
+  replicas: 1
+  extraLabels: {}
+  extraAnnotations: {}
+  parallelRollout: true
+  minReadySeconds: 10
+  hostNetwork: false
+  hostPID: false
+  dnsPolicy: ClusterFirst
+  terminationGracePeriodSeconds: 30
+  revisionHistoryLimit: 3
+  updateStrategy: {}
+  nodeSelector: {}
+  tolerations:
+    - operator: Exists
+  topologySpreadConstraints: []
+  priorityClassName: ''
+  podAnnotations: {}
+  podLabels: {}
+  podDisruptionBudget:
+    enabled: false
+  enableStatefulSetAutoDeletePVC: false
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 0
+    targetMemoryUtilizationPercentage: 0
+  affinity: {}
+
+service:
+  enabled: true
+  type: ClusterIP
+  nodePort: 31128
+  clusterIP: ''
+  internalTrafficPolicy: Cluster
+  annotations: {}
+
+serviceMonitor:
+  enabled: false
+  additionalLabels: {}
+  interval: ""
+  metricRelabelings: []
+  tlsConfig: {}
+  relabelings: []
+
+ingress:
+  enabled: false
+  annotations: {}
+  labels: {}
+  path: /
+  faroPort: 12347
+  pathType: Prefix
+  hosts:
+    - chart-example.local
+  tls: []
+
+networkPolicy:
+  enabled: false
+  flavor: kubernetes
+  policyTypes:
+    - Ingress
+    - Egress
+
+crds:
+  create: false
+
+extraObjects: []

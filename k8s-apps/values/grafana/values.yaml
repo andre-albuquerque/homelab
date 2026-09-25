@@ -1,0 +1,271 @@
+# Configuração mínima para Grafana - Homelab
+# Otimizado para baixo consumo de recursos
+
+global:
+  # Override registry if needed
+  imageRegistry: ""
+
+replicas: 1
+
+# Recursos mínimos configurados
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi
+
+# Imagem do Grafana
+image:
+  repository: grafana/grafana
+  tag: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Service Account
+serviceAccount:
+  create: true
+  name: ""
+  automountServiceAccountToken: true
+  annotations: {}
+
+# Segurança
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# Persistência - armazenar dashboards e configurações
+persistence:
+  enabled: true
+  type: pvc
+  accessModes:
+    - ReadWriteOnce
+  size: 2Gi
+  storageClassName: "longhorn"
+  annotations: {}
+  finalizers:
+    - kubernetes.io/pvc-protection
+
+# Ingress configurado
+ingress:
+  enabled: true
+  ingressClassName: nginx
+  annotations: {}
+  labels: {}
+  hosts:
+    - grafana.andrealbuquerque.me
+  path: /
+  pathType: Prefix
+  tls: []
+
+# Service
+service:
+  enabled: true
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+  annotations: {}
+  labels: {}
+
+# Configurações do Grafana
+grafana.ini:
+  server:
+    protocol: http
+    http_port: 3000
+    domain: grafana.andrealbuquerque.me
+    root_url: "%(protocol)s://%(domain)s"
+  auth:
+    disable_login_form: false
+  auth.anonymous:
+    enabled: false
+  users:
+    allow_sign_up: false
+  unified_alerting:
+    enabled: true
+  analytics:
+    reporting_enabled: false
+    check_for_updates: false
+
+# Variáveis de ambiente
+env:
+  GF_INSTALL_PLUGINS: ""
+  GF_LOG_LEVEL: info
+  GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+  GF_SERVER_ROOT_URL: "http://grafana.andrealbuquerque.me"
+
+# EnvFrom
+envFrom: []
+
+# Extra environment variables
+extraEnv: []
+
+# Extra env vars from secrets/configmaps
+extraEnvFrom: []
+
+# Volumes extras
+extraVolumes: []
+
+# Volume mounts extras
+extraVolumeMounts: []
+
+# Init containers
+initContainers: []
+
+# Sidecar containers
+sidecar:
+  dashboards:
+    enabled: false
+  datasources:
+    enabled: false
+  providers:
+    enabled: false
+
+# ConfigMaps extras
+extraConfigmapMounts: []
+
+# Secrets extras
+extraSecretMounts: []
+
+# Dashboard provider
+dashboardProviders: {}
+
+# Dashboards para importar
+dashboards: {}
+
+# Datasources para configurar
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.prometheus.svc.cluster.local:80
+        isDefault: true
+        editable: true
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki.loki.svc.cluster.local:3100
+        isDefault: false
+        editable: true
+
+# Alertas provisionados
+alerting: {}
+
+# Notifiers provisionados
+notifiers: {}
+
+# Plugins
+plugins: []
+
+# Pod annotations
+podAnnotations: {}
+
+# Pod labels
+podLabels: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Topology spread constraints
+topologySpreadConstraints: []
+
+# Priority class
+priorityClassName: ""
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: false
+
+# Startup probe
+startupProbe:
+  enabled: false
+
+# Liveness probe
+livenessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 60
+  timeoutSeconds: 5
+  failureThreshold: 10
+
+# Readiness probe
+readinessProbe:
+  httpGet:
+    path: /api/health
+    port: 3000
+  initialDelaySeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Admin credentials
+adminUser: admin
+adminPassword: "Grafana123"
+# Ou usar secret existente:
+# existingSecret: "grafana-admin-credentials"
+# adminUserKey: "admin-user"
+# adminPasswordKey: "admin-password"
+
+# SMTP configuration (disabled by default)
+smtp: {}
+
+# RBAC
+rbac:
+  create: true
+  pspEnabled: false
+  namespaced: false
+
+# Network policy
+networkPolicy:
+  enabled: false
+
+# Test pod
+testFramework:
+  enabled: false
+
+# Auto migration (para updates)
+autoMigration:
+  enabled: false
+
+# Annotations para deployment
+annotations: {}
+
+# Labels para deployment
+labels: {}
+
+# Deployment strategy
+deploymentStrategy:
+  type: RollingUpdate
+
+# Revision history limit
+revisionHistoryLimit: 3
+
+# Pod termination grace period
+terminationGracePeriodSeconds: 300
+
+# Host aliases
+hostAliases: []
+
+# Extra containers
+extraContainers: ""
+
+# Image renderer (para screenshots de dashboards)
+imageRenderer:
+  enabled: false

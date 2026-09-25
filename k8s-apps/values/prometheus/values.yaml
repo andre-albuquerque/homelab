@@ -1,0 +1,119 @@
+# Configuração mínima para Prometheus - Homelab
+# Otimizado para baixo consumo de recursos
+
+rbac:
+  create: true
+
+serviceAccounts:
+  server:
+    create: true
+    name: ""
+    annotations: {}
+
+configmapReload:
+  prometheus:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 16Mi
+      limits:
+        cpu: 50m
+        memory: 64Mi
+
+server:
+  name: server
+  image:
+    repository: quay.io/prometheus/prometheus
+    tag: ""
+    pullPolicy: IfNotPresent
+
+  # Recursos mínimos configurados
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 512Mi
+
+  # Retenção reduzida para economizar recursos
+  retention: "3d"
+  retentionSize: "1GB"
+
+  # Storage persistente mínimo
+  persistentVolume:
+    enabled: true
+    size: 2Gi
+    storageClass: "longhorn"
+    accessModes:
+      - ReadWriteOnce
+
+  # Configuração global reduzida
+  global:
+    scrape_interval: 30s
+    evaluation_interval: 30s
+
+  # Ingress configurado
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.andrealbuquerque.me
+    path: /
+    pathType: Prefix
+
+  # Service
+  service:
+    enabled: true
+    type: ClusterIP
+    servicePort: 80
+
+  # Security contexts
+  securityContext:
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+    fsGroup: 65534
+
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+
+  # Probes otimizadas
+  readinessProbeInitialDelay: 10
+  readinessProbePeriodSeconds: 10
+  livenessProbeInitialDelay: 10
+  livenessProbePeriodSeconds: 15
+
+# Subcharts - Configuração mínima
+alertmanager:
+  enabled: false
+
+kube-state-metrics:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
+
+prometheus-node-exporter:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi
+  rbac:
+    pspEnabled: false
+
+prometheus-pushgateway:
+  enabled: false
