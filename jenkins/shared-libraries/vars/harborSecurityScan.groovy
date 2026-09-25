@@ -1,0 +1,55 @@
+def call (body) {
+  def settings = [:]
+  body.resolveStrategy = Closure.DELEGATE_FIRST
+  body.delegate = settings
+  body()
+  container('alpine') {
+    sh '''
+      if [ -z "$HARBOR_CREDENTIALS" ]; then
+        echo "Please, configure Harbor Credentials"
+        exit 1
+      fi
+
+      apk add curl jq
+
+      # retry backoff parameters
+      MAX_RETRY=10
+      COUNT=1
+      SLEEP=1
+      SEVERITY="null"
+
+      TAG="${GIT_COMMIT:0:10}"
+       
+      # harbor variables
+      HARBOR_URL="http://harbor.andrealbuquerque.me"
+      HARBOR_PATH="api/v2.0/projects/andrealbuquerqueme/repositories/${JOB_NAME%/*}/artifacts/${TAG}"
+      HARBOR_URL_PARAMS="with_scan_overview=true"
+
+      while [ "$SEVERITY" == "null" ]; do
+        SEVERITY=$(curl -s \
+          "${HARBOR_URL}/${HARBOR_PATH}?${HARBOR_URL_PARAMS}" \
+          -H "accept: application/json" \
+          -H "authorization: Basic ${HARBOR_CREDENTIALS}" \
+          | jq -r 'if .scan_overview == null then "null" else (.scan_overview | to_entries[0].value.severity) end'
+        )
+ 
+        echo "sleep: ${SLEEP}s | count: ${COUNT}"
+        sleep $SLEEP
+        SLEEP=$(($SLEEP*2))
+        COUNT=$(($COUNT+1))
+ 
+        if [ $COUNT -ge $MAX_RETRY ]; then
+          echo "Reached maximum retry of ${MAX_RETRY}, exiting..."
+          exit 1
+        fi
+      done
+
+      if [ "$SEVERITY" == "Critical" ]; then
+        echo "There is Critical severity, please check on Harbor for the report"
+        exit 1
+      else
+        echo "All good, proceeding to the next stage"
+      fi
+    '''
+  }
+}
