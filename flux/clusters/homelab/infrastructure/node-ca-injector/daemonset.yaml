@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-ca-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: node-ca-installer
+  template:
+    metadata:
+      labels:
+        name: node-ca-installer
+    spec:
+      containers:
+      - name: installer
+        image: alpine:3.19
+        command: ["sh", "-c"]
+        args:
+        - |
+          cp /tmp/ca.crt /usr/local/share/ca-certificates/harbor-ca.crt
+          update-ca-certificates
+          # If using containerd, we sometimes need to poke it
+          nsenter -t 1 -m -u -i -n -p -- systemctl restart containerd
+          sleep infinity
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: ca-cert
+          mountPath: /tmp/ca.crt
+          subPath: ca.crt
+        - name: host-certs
+          mountPath: /usr/local/share/ca-certificates
+      volumes:
+      - name: ca-cert
+        secret:
+          secretName: root-ca-secret # Change to your cert-manager CA secret
+      - name: host-certs
+        hostPath:
+          path: /usr/local/share/ca-certificates
+      hostPID: true # Required for nsenter to restart containerd

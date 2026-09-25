@@ -1,0 +1,5 @@
+# clusters/homelab/infrastructure/node-ca-injector/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - daemonset.yaml

@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: real-world-api
+  namespace: real-world-api
+  labels:
+    app: real-world-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: real-world-api
+  template:
+    metadata:
+      labels:
+        app: real-world-api
+    spec:
+      imagePullSecrets:
+        - name: harbor-robot
+      containers:
+        - name: real-world-api
+          image: harbor.andrealbuquerque.me/andrealbuquerqueme/real-world-api:1f17b81de4
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          env:
+            - name: NODE_ENV
+              value: "production"
