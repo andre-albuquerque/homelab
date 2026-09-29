@@ -1,9 +1,11 @@
 def call (body) {
- 
+  
   def settings = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = settings
   body()
+
+  def appDirValue = settings.appDir ?: ''
 
   def podYaml = libraryResource('jenkinsPod.yaml')
  
@@ -16,7 +18,7 @@ def call (body) {
     stages {
       stage('Unit test') {
         steps {
-          goUnitTest{}
+          goUnitTest{ appDir = appDirValue }
         }
         when{
           anyOf {
@@ -28,7 +30,7 @@ def call (body) {
       }
       stage ('Build and Push') {
         steps {
-          kanikoBuildPush{}
+          kanikoBuildPush{ appDir = appDirValue }
         }
         when {
           anyOf {

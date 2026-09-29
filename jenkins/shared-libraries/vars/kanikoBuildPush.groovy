@@ -1,28 +1,33 @@
 def call (body) {
- 
+
   def settings = [:]
   body.resolveStrategy = Closure.DELEGATE_FIRST
   body.delegate = settings
   body()
- 
+
+  def appDir = settings.appDir ?: ''
+  if (appDir && !appDir.endsWith('/')) {
+    appDir += '/'
+  }
+
   container('kaniko') {
-    sh '''
+    sh """
       REGISTRY="harbor.andrealbuquerque.me/andrealbuquerqueme"
-      REPOSITORY=${JOB_NAME%/*}
-      IMAGE_TAG=${GIT_COMMIT:0:10}
+      REPOSITORY=\${JOB_NAME%/*}
+      IMAGE_TAG=\${GIT_COMMIT:0:10}
       ENVIRONMENT="prod"
 
-      DESTINATION="${REGISTRY}/${REPOSITORY}:${IMAGE_TAG}"
+      DESTINATION="\${REGISTRY}/\${REPOSITORY}:\${IMAGE_TAG}"
 
-      /kaniko/executor \
-        --dockerfile $(pwd)/docker/Dockerfile \
-        --insecure \
-        --skip-tls-verify \
-        --destination "${DESTINATION}" \
-        --context $(pwd)
+      /kaniko/executor \\
+        --dockerfile \$(pwd)/${appDir}docker/Dockerfile \\
+        --insecure \\
+        --skip-tls-verify \\
+        --destination "\${DESTINATION}" \\
+        --context \$(pwd)/${appDir}
 
-      echo "${IMAGE_TAG}" > /artifacts/${ENVIRONMENT}.artifact
-    '''
+      echo "\${IMAGE_TAG}" > /artifacts/\${ENVIRONMENT}.artifact
+    """
   }
- 
+
 }

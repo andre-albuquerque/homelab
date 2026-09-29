@@ -6,14 +6,15 @@ def call(body) {
 
     container('alpine') {
         withCredentials([sshUserPrivateKey(
-            credentialsId: 'jenkins-gitea',
+            credentialsId: 'jenkins-homelab',
             keyFileVariable: 'JENKINS_SSH_PRIVATE_KEY'
         )]) {
             sh '''
                 apk add --no-cache git openssh-client
 
 								GITEA_SSH_HOST="192.168.1.200"
-								REPO="andrealbuquerqueme/flux-cluster"
+								REPO="andrealbuquerqueme/homelab"
+								CLONE_DIR="homelab"
 								APP_NAME="real-world-api"
 								REGISTRY="harbor.andrealbuquerque.me/andrealbuquerqueme"
 								IMAGE_TAG="$(cat /artifacts/prod.artifact)"
@@ -30,10 +31,10 @@ def call(body) {
 								GIT_SSH_COMMAND="ssh -i $JENKINS_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -o IdentitiesOnly=yes" \
 								git clone gitea@${GITEA_SSH_HOST}:${REPO}.git
 
-								cd flux-cluster
+								cd ${CLONE_DIR}
 
 								sed -i "s|image: .*${APP_NAME}:.*|image: ${REGISTRY}/${APP_NAME}:${IMAGE_TAG}|" \
-										clusters/homelab/apps/real-world-api/deployment.yaml
+										flux/clusters/homelab/apps/real-world-api/deployment.yaml
 
 								git config user.name "jenkins"
 								git config user.email "jenkins@ci.local"
