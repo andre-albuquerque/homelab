@@ -18,7 +18,7 @@ def call (body) {
     stages {
       stage('Unit test') {
         steps {
-          goUnitTest{ appDir = appDirValue }
+          goUnitTest(appDir: appDirValue)
         }
         when{
           anyOf {
@@ -30,7 +30,7 @@ def call (body) {
       }
       stage ('Build and Push') {
         steps {
-          kanikoBuildPush{ appDir = appDirValue }
+          kanikoBuildPush(appDir: appDirValue)
         }
         when {
           anyOf {

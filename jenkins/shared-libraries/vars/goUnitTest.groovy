@@ -1,9 +1,13 @@
 def call (body) {
   
   def settings = [:]
-  body.resolveStrategy = Closure.DELEGATE_FIRST
-  body.delegate = settings
-  body()
+  if (body instanceof Map) {
+    settings << body
+  } else {
+    body.resolveStrategy = Closure.DELEGATE_FIRST
+    body.delegate = settings
+    body()
+  }
 
   def appDir = settings.appDir ?: ''
   if (appDir && !appDir.endsWith('/')) {
