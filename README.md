@@ -1,6 +1,32 @@
-# Homelab Kubernetes Cluster
+# Homelab
 
-This project automates the deployment of a production-ready Kubernetes cluster on a homelab environment using Proxmox, Terraform, and Kubespray.
+Monorepo for the homelab: Kubernetes cluster bootstrap, GitOps deployment, apps, and CI/CD.
+
+## Repository Structure
+
+```
+homelab/
+├── terraform/                 # Proxmox VM provisioning for the cluster
+├── kubespray/                 # Kubernetes cluster deployment (git submodule)
+├── flux/                      # FluxCD cluster config (synced by the cluster)
+│   └── clusters/homelab/
+│       ├── apps/              # app manifests (real-world-api, etc.)
+│       ├── infrastructure/    # cluster infrastructure
+│       └── flux-system/       # Flux bootstrap manifests
+├── k8s-apps/                  # app stack: helmfile, values, manifests (loki, minio, metallb, ...)
+├── apps/
+│   └── real-world-api/        # Go API: source (api/), Dockerfile (docker/), Jenkinsfile (ci/)
+└── jenkins/
+    ├── docker-compose.yml     # local Jenkins + MinIO for bootstrap
+    ├── shared-libraries/      # Jenkins pipeline shared library (vars/, resources/)
+    └── kubernetes/            # Jenkins-on-k8s: helmfile, values, manifests
+```
+
+## GitOps and CI/CD Flow
+
+- **GitHub** (`andre-albuquerque/homelab`) is the source of truth; a **Gitea mirror** on the homelab network (`192.168.1.200`) is consumed by the cluster.
+- **FluxCD** syncs the cluster from `flux/clusters/homelab` in the Gitea mirror (branch `main`, every 10m).
+- **Jenkins** builds `apps/real-world-api` from this repo: unit tests, Kaniko image build to Harbor, security scan, then a deploy stage that bumps the image tag in `flux/clusters/homelab/apps/real-world-api/deployment.yaml`. Flux picks up the change and rolls out the new version.
 
 ## Project Overview
 
@@ -71,7 +97,7 @@ ansible-playbook -i /inventory/inventory.ini --private-key /root/.ssh/id_rsa clu
 
 The included `Jenkinsfile` provides a pipeline for automating the entire process. You will need to configure a Jenkins job and customize the pipeline script to match your environment.
 
-The `jenkins/` directory also contains a `docker-compose.yml` file to easily spin up a Jenkins and MinIO (for Terraform state) instance.
+The `jenkins/docker-compose.yml` file spins up a Jenkins and MinIO (for Terraform state) instance for bootstrap. For running Jenkins on the cluster itself, see `jenkins/kubernetes/` (helmfile-based).
 
 ## Customization
 
